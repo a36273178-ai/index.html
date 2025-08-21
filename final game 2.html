@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Waste Awareness Games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .game-container {
+            transition: all 0.3s ease;
+        }
+        
+        .sorting-bin {
+            min-height: 150px;
+            border: 2px dashed #4B5563;
+            transition: all 0.2s ease;
+        }
+        
+        .sorting-bin.highlight {
+            border-color: #10B981;
+            background-color: #ECFDF5;
+        }
+        
+        .e-waste-card {
+            cursor: grab;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .e-waste-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timeline-stage {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .timeline-stage:hover {
+            transform: scale(1.02);
+        }
+        
+        #game1, #game2 {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            background-color: #059669;
+            color: white;
+        }
+        
+        .tabs-container {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .info-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-12">
+        <h1 class="text-4xl font-bold text-center text-emerald-800 mb-2">E-Waste Awareness Games</h1>
+        <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Interactive games to learn about electronic waste hazards, management, and sustainable solutions</p>
+        
+        <div class="tabs-container bg-white rounded-lg shadow-md mb-8 overflow-hidden">
+            <div class="flex">
+                <button id="tab1" class="tab-button flex-1 py-4 px-6 font-semibold text-gray-700 text-center active">Sorting Challenge</button>
+                <button id="tab2" class="tab-button flex-1 py-4 px-6 font-semibold text-gray-700 text-center">Lifecycle Timeline</button>
+            </div>
+        </div>
+        
+        <!-- Game 1: E-Waste Sorting Challenge -->
+        <div id="game1" class="game-container bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-emerald-800 mb-4">E-Waste Sorting Challenge</h2>
+            <p class="text-gray-600 mb-6">Properly categorize different types of electronic waste to learn about responsible disposal methods.</p>
+            
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-4">
+                    <div class="relative w-16 h-16">
+                        <svg class="progress-ring w-full h-full" viewBox="0 0 36 36">
+                            <circle class="progress-ring__background" cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" stroke-width="3"></circle>
+                            <circle class="progress-ring__circle" cx="18" cy="18" r="14" fill="none" stroke="#10B981" stroke-width="3" stroke-dasharray="88" stroke-dashoffset="88"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center text-lg font-bold text-gray-700">0%</div>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Progress</p>
+                        <p class="text-sm text-gray-500" id="items-sorted">0/8 items sorted</p>
+                    </div>
+                </div>
+                <button id="reset-sorting" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Reset Game</button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Sorting bins -->
+                <div class="sorting-bin rounded-lg p-4" id="recycle-bin" data-category="recycle">
+                    <div class="flex items-center mb-2">
+                        <h3 class="font-bold text-lg">Recycling Center</h3>
+                        <div class="info-tooltip ml-2 relative inline-block">
+                            <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="tooltip-text absolute z-10 w-64 p-2 mt-2 text-sm text-white bg-gray-800 rounded-md opacity-0 invisible transition-all duration-200 transform -translate-x-1/2 left-1/2">
+                                Items that can be fully recycled through specialized e-waste programs
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">Drop items that contain valuable metals or components that can be safely recycled</p>
+                </div>
+                
+                <div class="sorting-bin rounded-lg p-4" id="refurbish-bin" data-category="refurbish">
+                    <div class="flex items-center mb-2">
+                        <h3 class="font-bold text-lg">Refurbishment</h3>
+                        <div class="info-tooltip ml-2 relative inline-block">
+                            <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="tooltip-text absolute z-10 w-64 p-2 mt-2 text-sm text-white bg-gray-800 rounded-md opacity-0 invisible transition-all duration-200 transform -translate-x-1/2 left-1/2">
+                                Items that can be repaired or refurbished for extended use
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">Drop items that can be repaired, upgraded, or donated for reuse</p>
+                </div>
+                
+                <div class="sorting-bin rounded-lg p-4" id="hazardous-bin" data-category="hazardous">
+                    <div class="flex items-center mb-2">
+                        <h3 class="font-bold text-lg">Hazardous Waste</h3>
+                        <div class="info-tooltip ml-2 relative inline-block">
+                            <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="tooltip-text absolute z-10 w-64 p-2 mt-2 text-sm text-white bg-gray-800 rounded-md opacity-0 invisible transition-all duration-200 transform -translate-x-1/2 left-1/2">
+                                Items containing toxic materials requiring special disposal
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">Drop items containing toxic components like lead, mercury, or cadmium</p>
+                </div>
+                
+                <div class="sorting-bin rounded-lg p-4" id="landfill-bin" data-category="landfill">
+                    <div class="flex items-center mb-2">
+                        <h3 class="font-bold text-lg">Last Resort</h3>
+                        <div class="info-tooltip ml-2 relative inline-block">
+                            <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="tooltip-text absolute z-10 w-64 p-2 mt-2 text-sm text-white bg-gray-800 rounded-md opacity-0 invisible transition-all duration-200 transform -translate-x-1/2 left-1/2">
+                                Items with no current recycling options (should be avoided)
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">Drop items that currently have no recycling options (last resort)</p>
+                </div>
+            </div>
+            
+            <!-- E-waste items to sort -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="e-waste-items">
+                <div class="e-waste-card bg-white rounded-lg p-3 shadow-md flex flex-col items-center" draggable="true" data-category="hazardous" data-item="crt-monitor">
+                    <div class="w-16 h-16 bg-red-100 flex items-center justify-center rounded-lg mb-2">
+                        <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-center">CRT Monitor</p>
+                    <p class="text-xs text-gray-500 text-center">Contains leaded glass</p>
+                </div>
+                
+                <div class="e-waste-card bg-white rounded-lg p-3 shadow-md flex flex-col items-center" draggable="true" data-category="refurbish" data-item="laptop">
+                    <div class="w-16 h-16 bg-green-100 flex items-center justify-center rounded-lg mb-2">
+                        <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-center">Laptop</p>
+                    <p class="text-xs text-gray-500 text-center">Potential for repair/upgrade</p>
+                </div>
+                
+                <div class="e-waste-card bg-white rounded-lg p-3 shadow-md flex flex-col items-center" draggable="true" data-category="recycle" data-item="smartphone">
+                    <div class="w-16 h-16 bg-blue-100 flex items-center justify-center rounded-lg mb-2">
+                        <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-center">Smartphone</p>
+                    <p class="text-xs text-gray-500 text-center">Valuable components</p>
+                </div>
+                
+                <div class="e-waste-card bg-white rounded-lg p-3 shadow-md flex flex-col items-center" draggable="true" data-category="hazardous" data-item="batteries">
+                    <div class="w-16 h-16 bg-yellow-100 flex items-center justify-center rounded-lg mb-2">
+                        <svg class="w-10 h-10 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-center">Batteries</p>
+                    <p class="text-xs text-gray-500 text-center">Lithium/lead content</p>
+                </div>
+                
+                <div class="e-waste-card bg-white rounded-lg p-3 shadow-md flex flex-col items-center" draggable="true" data-category="refurbish" data-item="tablet">
+                    <div class="w-16 h-16 bg-purple-100 flex items-center justify-center rounded-lg mb-2">
+                        <svg class="w-10 h-10 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-center">Tablet</p>
+                    <p class="text-xs text-gray-500 text-center">Good condition</p>
+                </div>
+                
+                <div class="e-waste-card bg-white rounded-lg p-3 shadow-md flex flex-col items-center" draggable="true" data-category="recycle" data-item="router">
+                    <div class="w-16 h-16 bg-indigo-100 flex items-center justify-center rounded-lg mb-2">
+                        <svg class="w-10 h-10 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16l2.879-2.879m0 0a3 3 0 104.243-4.243 3 3 0 00-4.243 4.243zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-center">Router</p>
+                    <p class="text-xs text-gray-500 text-center">Circuits & metals</p>
+                </div>
+                
+                <div class="e-waste-card bg-white rounded-lg p-3 shadow-md flex flex-col items-center" draggable="true" data-category="landfill" data-item="earbuds">
+                    <div class="w-16 h-16 bg-gray-100 flex items-center justify-center rounded-lg mb-2">
+                        <svg class="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 1.414M8.172 8.172a5 5 0 001.414-1.414M2.1 12a9 9 0 012.728-6.728m9.9 9.9a9 9 0 01-12.728 0"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-center">Earbuds</p>
+                    <p class="text-xs text-gray-500 text-center">Hard to recycle</p>
+                </div>
+                
+                <div class="e-waste-card bg-white rounded-lg p-3 shadow-md flex flex-col items-center" draggable="true" data-category="hazardous" data-item="printer-cartridge">
+                    <div class="w-16 h-16 bg-orange-100 flex items-center justify-center rounded-lg mb-2">
+                        <svg class="w-10 h-10 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-medium text-center">Printer Cartridge</p>
+                    <p class="text-xs text-gray-500 text-center">Toxic ink residue</p>
+                </div>
+            </div>
+            
+            <div id="feedback-container" class="mt-6"></div>
+        </div>
+        
+        <!-- Game 2: E-Waste Lifecycle Timeline -->
+        <div id="game2" class="game-container bg-white rounded-xl shadow-lg p-6 hidden">
+            <h2 class="text-2xl font-bold text-emerald-800 mb-4">E-Waste Lifecycle Timeline</h2>
+            <p class="text-gray-600 mb-6">Assemble the stages of electronic product lifecycle from manufacturing to disposal in the correct order.</p>
+            
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-4">
+                    <div class="relative w-16 h-16">
+                        <svg class="progress-ring w-full h-full" viewBox="0 0 36 36">
+                            <circle class="progress-ring__background" cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" stroke-width="3"></circle>
+                            <circle class="progress-ring__circle" cx="18" cy="18" r="14" fill="none" stroke="#10B981" stroke-width="3" stroke-dasharray="88" stroke-dashoffset="88"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center text-lg font-bold text-gray-700">0%</div>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Progress</p>
+                        <p class="text-sm text-gray-500" id="stages-ordered">0/6 stages correct</p>
+                    </div>
+                </div>
+                <button id="reset-timeline" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Reset Game</button>
+            </div>
+            
+            <p class="text-sm text-gray-500 mb-4">Drag and rearrange the stages below. Green means correct position!</p>
+            
+            <div id="timeline-stages" class="space-y-3">
+                <div class="timeline-stage bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-stage="1" draggable="true">
+                    <div class="flex items-center">
+                        <div class="mr-3 text-gray-400 text-xl font-bold">1.</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-700">Disposal / Recycling</h3>
+                            <p class="text-sm text-gray-500">Proper e-waste management reduces environmental impact and recovers valuable materials</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-stage bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-stage="2" draggable="true">
+                    <div class="flex items-center">
+                        <div class="mr-3 text-gray-400 text-xl font-bold">2.</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-700">Manufacturing</h3>
+                            <p class="text-sm text-gray-500">Assembly of electronic products using raw materials and components</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-stage bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-stage="3" draggable="true">
+                    <div class="flex items-center">
+                        <div class="mr-3 text-gray-400 text-xl font-bold">3.</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-700">Use / Consumption</h3>
+                            <p class="text-sm text-gray-500">Consumer operation of the electronic device over its lifespan</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-stage bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-stage="4" draggable="true">
+                    <div class="flex items-center">
+                        <div class="mr-3 text-gray-400 text-xl font-bold">4.</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-700">Material Extraction</h3>
+                            <p class="text-sm text-gray-500">Mining rare earth metals and other raw materials needed for electronics</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-stage bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-stage="5" draggable="true">
+                    <div class="flex items-center">
+                        <div class="mr-3 text-gray-400 text-xl font-bold">5.</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-700">Design</h3>
+                            <p class="text-sm text-gray-500">Engineering electronics for functionality and potential recyclability</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-stage bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move" data-stage="6" draggable="true">
+                    <div class="flex items-center">
+                        <div class="mr-3 text-gray-400 text-xl font-bold">6.</div>
+                        <div>
+                            <h3 class="font-semibold text-gray-700">Retirement</h3>
+                            <p class="text-sm text-gray-500">Device becomes obsolete, broken, or unwanted</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="timeline-feedback" class="mt-6"></div>
+        </div>
+        
+        <!-- Educational content that appears after completion -->
+        <div id="educational-content" class="bg-white rounded-xl shadow-lg p-6 mt-8 hidden">
+            <div id="sorting-content" class="hidden">
+                <h2 class="text-2xl font-bold text-emerald-800 mb-4">E-Waste Management Insights</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-emerald-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-emerald-800 mb-2">How Companies Manage E-Waste</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                            <li>Many offer take-back programs for old products</li>
+                            <li>Some use modular designs for easier repair/recycling</li>
+                            <li>Partnering with certified e-waste recyclers</li>
+                            <li>Developing closed-loop recycling systems</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-blue-800 mb-2">What You Can Do</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                            <li>Use manufacturer take-back programs</li>
+                            <li>Locate certified e-waste recyclers (check websites like e-Stewards)</li>
+                            <li>Donate working electronics</li>
+                            <li>Remove batteries before disposal</li>
+                            <li>Support companies with sustainable practices</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-red-800 mb-2">E-Waste Hazards</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                            <li>Lead: Neurological damage</li>
+                            <li>Mercury: Kidney and brain damage</li>
+                            <li>Cadmium: Kidney and lung disease</li>
+                            <li>Flame retardants: Endocrine disruption</li>
+                            <li>Improper burning releases dioxins</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-yellow-800 mb-2">Stages of E-Waste</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                            <li>1. Collection from consumers/businesses</li>
+                            <li>2. Sorting by material type</li>
+                            <li>3. Dismantling components</li>
+                            <li>4. Shredding materials</li>
+                            <li>5. Separation processes</li>
+                            <li>6. Recovery of usable materials</li>
+                            <li>7. Proper disposal of hazardous waste</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="timeline-content" class="hidden">
+                <h2 class="text-2xl font-bold text-emerald-800 mb-4">Complete Electronics Lifecycle</h2>
+                <div class="space-y-4">
+                    <div class="relative">
+                        <div class="absolute left-5 h-full w-0.5 bg-emerald-200 top-4"></div>
+                        
+                        <div class="relative pl-10 pb-8">
+                            <div class="absolute left-0 top-1 flex items-center justify-center w-8 h-8 rounded-full bg-emerald-600 text-white font-bold">1</div>
+                            <div class="bg-emerald-50 rounded-lg p-4">
+                                <h3 class="font-semibold text-emerald-800">Design</h3>
+                                <p class="text-sm text-gray-700">Sustainable design principles like modularity, repairability, and material selection determine 80% of a product's environmental impact.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="relative pl-10 pb-8">
+                            <div class="absolute left-0 top-1 flex items-center justify-center w-8 h-8 rounded-full bg-emerald-600 text-white font-bold">2</div>
+                            <div class="bg-emerald-50 rounded-lg p-4">
+                                <h3 class="font-semibold text-emerald-800">Material Extraction</h3>
+                                <p class="text-sm text-gray-700">Mining for precious metals and rare earth elements causes habitat destruction, water pollution, and social impacts in mining communities.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="relative pl-10 pb-8">
+                            <div class="absolute left-0 top-1 flex items-center justify-center w-8 h-8 rounded-full bg-emerald-600 text-white font-bold">3</div>
+                            <div class="bg-emerald-50 rounded-lg p-4">
+                                <h3 class="font-semibold text-emerald-800">Manufacturing</h3>
+                                <p class="text-sm text-gray-700">Assembly processes consume energy and water, while generating waste and emissions. Many factories are now implementing cleaner production methods.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="relative pl-10 pb-8">
+                            <div class="absolute left-0 top-1 flex items-center justify-center w-8 h-8 rounded-full bg-emerald-600 text-white font-bold">4</div>
+                            <div class="bg-emerald-50 rounded-lg p-4">
+                                <h3 class="font-semibold text-emerald-800">Use / Consumption</h3>
+                                <p class="text-sm text-gray-700">Energy efficiency during use accounts for significant environmental impact. Average lifespan of smartphones is just 2-3 years.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="relative pl-10 pb-8">
+                            <div class="absolute left-0 top-1 flex items-center justify-center w-8 h-8 rounded-full bg-emerald-600 text-white font-bold">5</div>
+                            <div class="bg-emerald-50 rounded-lg p-4">
+                                <h3 class="font-semibold text-emerald-800">Retirement</h3>
+                                <p class="text-sm text-gray-700">Only 17.4% of global e-waste is properly recycled. The rest goes to landfills or informal recycling with health/environmental risks.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="relative pl-10">
+                            <div class="absolute left-0 top-1 flex items-center justify-center w-8 h-8 rounded-full bg-emerald-600 text-white font-bold">6</div>
+                            <div class="bg-emerald-50 rounded-lg p-4">
+                                <h3 class="font-semibold text-emerald-800">Disposal / Recycling</h3>
+                                <p class="text-sm text-gray-700">Recycling recovers valuable materials worth $57 billion annually, but requires proper handling to avoid pollution from hazardous components.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-blue-800 mb-2">Emerging Solutions</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                            <li>Urban mining (recovering metals from e-waste)</li>
+                            <li>Extended producer responsibility laws</li>
+                            <li>Circular economy business models</li>
+                            <li>Eco-design regulations</li>
+                            <li>Right-to-repair legislation</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-purple-800 mb-2">Regional Approaches</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                            <li>EU: Strict WEEE Directive with collection targets</li>
+                            <li>Japan: Advanced home appliance recycling law</li>
+                            <li>US: State-level programs (California leads)</li>
+                            <li>Developing countries: Informal sector dominates</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            document.getElementById('tab1').addEventListener('click', function() {
+                document.getElementById('game1').classList.remove('hidden');
+                document.getElementById('game2').classList.add('hidden');
+                document.getElementById('tab1').classList.add('active');
+                document.getElementById('tab2').classList.remove('active');
+            });
+            
+            document.getElementById('tab2').addEventListener('click', function() {
+                document.getElementById('game1').classList.add('hidden');
+                document.getElementById('game2').classList.remove('hidden');
+                document.getElementById('tab1').classList.remove('active');
+                document.getElementById('tab2').classList.add('active');
+            });
+            
+            // Game 1: E-Waste Sorting Challenge
+            const eWasteItems = document.querySelectorAll('.e-waste-card');
+            const sortingBins = document.querySelectorAll('.sorting-bin');
+            const progressRing = document.querySelector('#game1 .progress-ring__circle');
+            const itemsSortedText = document.getElementById('items-sorted');
+            const feedbackContainer = document.getElementById('feedback-container');
+            let correctSorts = 0;
+            const totalItems = eWasteItems.length;
+            
+            function updateProgress() {
+                const percentage = Math.round((correctSorts / totalItems) * 100);
+                const circumference = 2 * Math.PI * 14;
+                const offset = circumference - (percentage / 100) * circumference;
+                document.querySelector('#game1 .progress-ring__circle').style.strokeDashoffset = offset;
+                document.querySelector('#game1 .progress-ring + div').textContent = percentage + '%';
+                itemsSortedText.textContent = correctSorts + '/' + totalItems + ' items sorted';
+                
+                if (correctSorts === totalItems) {
+                    feedbackContainer.innerHTML = `
+                        <div class="bg-emerald-100 border-l-4 border-emerald-500 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-semibold text-emerald-800">Great job!</h3>
+                                    <div class="mt-2 text-sm text-emerald-700">
+                                        <p>You've successfully sorted all e-waste items. Check out the educational content below to learn more!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('educational-content').classList.remove('hidden');
+                    document.getElementById('sorting-content').classList.remove('hidden');
+                }
+            }
+            
+            eWasteItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.dataset.item);
+                    setTimeout(() => {
+                        this.classList.add('opacity-0');
+                    }, 0);
+                });
+                
+                item.addEventListener('dragend', function() {
+                    this.classList.remove('opacity-0');
+                });
+            });
+            
+            sortingBins.forEach(bin => {
+                bin.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('highlight');
+                });
+                
+                bin.addEventListener('dragleave', function() {
+                    this.classList.remove('highlight');
+                });
+                
+                bin.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('highlight');
+                    
+                    const itemName = e.dataTransfer.getData('text/plain');
+                    const droppedItem = document.querySelector(`[data-item="${itemName}"]`);
+                    const correctCategory = droppedItem.dataset.category;
+                    
+                    if (this.dataset.category === correctCategory) {
+                        if (!droppedItem.classList.contains('sorted-correct')) {
+                            correctSorts++;
+                            droppedItem.classList.add('sorted-correct');
+                            
+                            // Show feedback
+                            const feedback = document.createElement('div');
+                            feedback.className = 'text-emerald-600 text-sm mt-2';
+                            feedback.textContent = 'Correct! ' + getCategoryFeedback(correctCategory);
+                            this.appendChild(feedback);
+                            
+                            // Remove feedback after delay
+                            setTimeout(() => {
+                                feedback.remove();
+                            }, 3000);
+                        }
+                    } else {
+                        const feedback = document.createElement('div');
+                        feedback.className = 'text-red-600 text-sm mt-2';
+                        feedback.textContent = 'Incorrect: ' + getCategoryFeedback(correctCategory);
+                        this.appendChild(feedback);
+                        
+                        // Remove feedback after delay
+                        setTimeout(() => {
+                            feedback.remove();
+                        }, 3000);
+                    }
+                    
+                    updateProgress();
+                });
+            });
+            
+            function getCategoryFeedback(category) {
+                switch(category) {
+                    case 'recycle':
+                        return 'Contains valuable materials that should be recycled.';
+                    case 'refurbish':
+                        return 'Can be repaired or reused by someone else.';
+                    case 'hazardous':
+                        return 'Contains toxic materials needing special handling.';
+                    case 'landfill':
+                        return 'Last resort - try to avoid landfill whenever possible!';
+                    default:
+                        return '';
+                }
+            }
+            
+            // Reset sorting game
+            document.getElementById('reset-sorting').addEventListener('click', function() {
+                eWasteItems.forEach(item => {
+                    item.classList.remove('sorted-correct');
+                });
+                correctSorts = 0;
+                updateProgress();
+                feedbackContainer.innerHTML = '';
+                document.getElementById('educational-content').classList.add('hidden');
+                document.getElementById('sorting-content').classList.add('hidden');
+            });
+            
+            // Game 2: E-Waste Timeline
+            const timelineStages = document.getElementById('timeline-stages');
+            const timelineChildren = Array.from(timelineStages.children);
+            const correctOrder = [4, 5, 2, 1, 3, 6]; // Correct stage IDs in order
+            let currentOrder = timelineChildren.map(child => parseInt(child.dataset.stage));
+            const progressRing2 = document.querySelector('#game2 .progress-ring__circle');
+            const stagesOrderedText = document.getElementById('stages-ordered');
+            const timelineFeedback = document.getElementById('timeline-feedback');
+            let currentDraggedItem = null;
+            
+            function updateTimelineProgress() {
+                const correctCount = currentOrder.reduce((count, stageId, index) => {
+                    return count + (stageId === correctOrder[index] ? 1 : 0);
+                }, 0);
+                
+                const percentage = Math.round((correctCount / correctOrder.length) * 100);
+                const circumference = 2 * Math.PI * 14;
+                const offset = circumference - (percentage / 100) * circumference;
+                progressRing2.style.strokeDashoffset = offset;
+                document.querySelector('#game2 .progress-ring + div').textContent = percentage + '%';
+                stagesOrderedText.textContent = correctCount + '/' + correctOrder.length + ' stages correct';
+                
+                // Update color-coding
+                timelineChildren.forEach((child, index) => {
+                    const stageId = parseInt(child.dataset.stage);
+                    if (stageId === correctOrder[index]) {
+                        child.classList.add('border-emerald-500', 'bg-emerald-50');
+                        child.classList.remove('border-gray-200');
+                    } else {
+                        child.classList.remove('border-emerald-500', 'bg-emerald-50');
+                        child.classList.add('border-gray-200');
+                    }
+                });
+                
+                if (correctCount === correctOrder.length) {
+                    timelineFeedback.innerHTML = `
+                        <div class="bg-emerald-100 border-l-4 border-emerald-500 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-semibold text-emerald-800">Perfect!</h3>
+                                    <div class="mt-2 text-sm text-emerald-700">
+                                        <p>You've correctly ordered all stages of the electronics lifecycle. Below you'll find detailed information about each stage.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('educational-content').classList.remove('hidden');
+                    document.getElementById('timeline-content').classList.remove('hidden');
+                } else {
+                    timelineFeedback.innerHTML = '';
+                    document.getElementById('educational-content').classList.add('hidden');
+                    document.getElementById('timeline-content').classList.add('hidden');
+                }
+            }
+            
+            timelineChildren.forEach(stage => {
+                stage.addEventListener('dragstart', function() {
+                    currentDraggedItem = this;
+                    setTimeout(() => {
+                        this.classList.add('opacity-30');
+                    }, 0);
+                });
+                
+                stage.addEventListener('dragend', function() {
+                    this.classList.remove('opacity-30');
+                    currentDraggedItem = null;
+                });
+                
+                stage.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    const rect = this.getBoundingClientRect();
+                    const midPoint = rect.top + rect.height / 2;
+                    
+                    if (e.clientY < midPoint) {
+                        this.classList.add('border-t-2', 'border-emerald-500');
+                        this.classList.remove('border-b-2');
+                    } else {
+                        this.classList.add('border-b-2', 'border-emerald-500');
+                        this.classList.remove('border-t-2');
+                    }
+                });
+                
+                stage.addEventListener('dragleave', function() {
+                    this.classList.remove('border-t-2', 'border-b-2', 'border-emerald-500');
+                });
+                
+                stage.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('border-t-2', 'border-b-2', 'border-emerald-500');
+                    
+                    if (!currentDraggedItem || currentDraggedItem === this) return;
+                    
+                    const rect = this.getBoundingClientRect();
+                    const midPoint = rect.top + rect.height / 2;
+                    const insertBefore = e.clientY < midPoint;
+                    
+                    if (insertBefore) {
+                        timelineStages.insertBefore(currentDraggedItem, this);
+                    } else {
+                        timelineStages.insertBefore(currentDraggedItem, this.nextSibling);
+                    }
+                    
+                    // Update current order
+                    currentOrder = Array.from(timelineStages.children).map(child => parseInt(child.dataset.stage));
+                    updateTimelineProgress();
+                });
+            });
+            
+            // Reset timeline game
+            document.getElementById('reset-timeline').addEventListener('click', function() {
+                // Reset to original order
+                timelineChildren.forEach(child => {
+                    timelineStages.appendChild(child);
+                });
+                currentOrder = timelineChildren.map(child => parseInt(child.dataset.stage));
+                updateTimelineProgress();
+            });
+            
+            // Initialize both games
+            updateProgress();
+            updateTimelineProgress();
+        });
+    </script>
+</body>
+</html>
+
